@@ -1,0 +1,4 @@
+squat 350
+bench 240
+press 185
+dead 425
