@@ -3,6 +3,8 @@
 # Trace Norris thunderheavyindustries@gmail.com
 # Feb/2015
 require "open-uri"
+require 'rounding'
+require 'json'
 
 class FiveThreeOne
 
@@ -10,6 +12,7 @@ class FiveThreeOne
 	# calculates the weight needed to be added to each side of the bar
 	def plate_calc weight
 
+		weight = weight.round_to(5)
 		weight_minus_bar = weight -45
 		one_side=0
 
@@ -20,20 +23,16 @@ class FiveThreeOne
 		return one_side
 	end
 
+
 	#pulls in previous values stored in a text file
-	def open_read 
+	def open_read
 
-		contents = File.open("Lift_nums.txt", "r"){ |file| file.read }
-		arr_of_lines = contents.scan(/\w+/)
-		lift_val= Hash.new
-
-		(0..7).step(2) do |n|
-
-			lift_val[ arr_of_lines[n] ]= arr_of_lines[n+1].to_i 
-		end
+		contents = File.open("Lift_nums.json", "r"){ |file| file.read }
+		lift_val= JSON.parse(contents)
 
 		return lift_val
 	end
+
 
 	# prompts the user for the values desired to incremented by
 	def update content_to_write
@@ -54,12 +53,8 @@ class FiveThreeOne
 		content_to_write["press"]+= (gets.chomp!).to_i
 
 
-		somefile = File.open( "Lift_nums.txt", "w")
-
-		content_to_write.each do |b,n|
-
-			somefile.puts b+" "+n.to_s+"\n"
-		end
+		somefile = File.open( "lift_nums.json", "w")
+		somefile.puts content_to_write
 		somefile.close 
 
 		puts "Your values for the next cycle will be:"
@@ -78,59 +73,54 @@ class FiveThreeOne
 		week_num = (gets.chomp!).to_i
 
 		lifts_hash = open_read 
-		weight = (lifts_hash[lift]*0.9).to_i
+		weight = (lifts_hash[lift]*0.9)
 
 
 		puts " "
-		puts " You're doing week #{week_num}  #{lift} which is currently set @ #{weight}lb"
+		puts " You're doing week #{week_num}  #{lift} which is currently set @ #{weight.round_to(5)}lb"
 
-		puts "week_num"
 		if week_num == 1
-			puts " "
 			puts "************* Week #{week_num} ***********"
-			puts "5 reps @ #{(weight*0.45).to_i} with #{plate_calc ((weight*0.45).to_i)} on each side"
-			puts "5 reps @ #{(weight*0.55).to_i} with #{plate_calc ((weight*0.55).to_i)} on each side"
-			puts "5 reps @ #{(weight*0.65).to_i} with #{plate_calc ((weight*0.65).to_i)} on each side"
-			puts "5 reps @ #{(weight*0.75).to_i} with #{plate_calc ((weight*0.75).to_i)} on each side"
-			puts "5 reps @ #{(weight*0.85).to_i} with #{plate_calc ((weight*0.85).to_i)} on each side"
+
+			(0.45..0.85).step(0.10).each do |val|
+				puts "5 reps @ #{ (weight*val).round_to(5) } with #{ plate_calc (weight*val)} on each side"
+			end
 			puts "***********************************"
-			puts " "
 
 		elsif week_num == 2
 			puts " "
 			puts "************* Week #{week_num} ***********"
-			puts "5 reps @ #{(weight*0.5).to_i} with #{plate_calc ((weight*0.5).to_i)} on each side"
-			puts "5 reps @ #{(weight*0.6).to_i} with #{plate_calc ((weight*0.6).to_i)} on each side"
-			puts "3 reps @ #{(weight*0.7).to_i} with #{plate_calc ((weight*0.7).to_i)} on each side"
-			puts "3 reps @ #{(weight*0.8).to_i} with #{plate_calc ((weight*0.8).to_i)} on each side"
-			puts "3 reps @ #{(weight*0.9).to_i} with #{plate_calc ((weight*0.9).to_i)} on each side"
+			puts "5 reps @ #{(weight*0.5).round_to(5)} with #{plate_calc (weight*0.5)} on each side"
+			puts "5 reps @ #{(weight*0.6).round_to(5)} with #{plate_calc (weight*0.6)} on each side"
+			(0.7..0.9).step(.1),each do |val|
+				puts "3 reps @ #{(weight*val).round_to(5)} with #{plate_calc ((weight*val))} on each side"
+			end
 			puts "***********************************"
 			puts " "
 
 		elsif week_num == 3
 			puts " "
 			puts "************* Week #{week_num} ***********"
-			puts "5 reps @ #{(weight*0.55).to_i} with #{plate_calc ((weight*0.55).to_i)} on each side"
-			puts "5 reps @ #{(weight*0.65).to_i} with #{plate_calc ((weight*0.65).to_i)} on each side"
-			puts "5 reps @ #{(weight*0.75).to_i} with #{plate_calc ((weight*0.75).to_i)} on each side"
-			puts "3 reps @ #{(weight*0.85).to_i} with #{plate_calc ((weight*0.85).to_i)} on each side"
-			puts "1 reps @ #{(weight*0.95).to_i} with #{plate_calc ((weight*0.95).to_i)} on each side"
+			(0.55..0.75).step(0.1).each do |val| 
+				puts "5 reps @ #{(weight*val).round_to(5)} with #{plate_calc (weight*val)} on each side"  
+			end
+			puts "3 reps @ #{(weight*0.85).round_to(5)} with #{plate_calc (weight*0.85)} on each side"
+			puts "1 reps @ #{(weight*0.95).round_to(5)} with #{plate_calc (weight*0.95)} on each side"
 			puts "***********************************"
 			puts " "
 
 		elsif week_num == 4
 			puts " "
 			puts "************* Week #{week_num} ***********"
-			puts "5 reps @ #{(weight*0.2).to_i} with #{plate_calc ((weight*0.2).to_i)} on each side"
-			puts "5 reps @ #{(weight*0.3).to_i} with #{plate_calc ((weight*0.3).to_i)} on each side"
-			puts "5 reps @ #{(weight*0.4).to_i} with #{plate_calc ((weight*0.4).to_i)} on each side"
-			puts "5 reps @ #{(weight*0.5).to_i} with #{plate_calc ((weight*0.5).to_i)} on each side"
-			puts "5 reps @ #{(weight*0.6).to_i} with #{plate_calc ((weight*0.6).to_i)} on each side"
+			(0.2..0.6).step(0.1).each do |val|
+				puts "5 reps @ #{ (weight*val).round_to(5) } with #{ plate_calc (weight*val)} on each side"
+			end
 			puts "***********************************"
 			puts " "
+
+
 			if lift=="press"
 			update lifts_hash
-			else
 			end
 
 		else
@@ -143,8 +133,5 @@ end
 
 Five = FiveThreeOne.new
 Five.week
-
-
-
 
 
