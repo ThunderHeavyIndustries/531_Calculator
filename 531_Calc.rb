@@ -66,12 +66,15 @@ class FiveThreeOne
 	# outputs results to the terminal
 	def week 
 
+		shortened = {"s"=>"squat", "b"=>"bench","d"=>"dead","p"=>"press"}
 
 		puts "Which lift you doing brah? squat, press, dead, or bench?"
 		lift = gets.chomp!
 		puts  "which week brah? 1, 2, 3, or 4?"
 		week_num = (gets.chomp!).to_i
 
+		shortened.has_key?(lift) ? lift = shortened[lift] : lift = lift
+			
 		lifts_hash = open_read 
 		weight = (lifts_hash[lift]*0.9)
 
@@ -92,7 +95,7 @@ class FiveThreeOne
 			puts "************* Week #{week_num} ***********"
 			puts "5 reps @ #{(weight*0.5).round_to(5)} with #{plate_calc (weight*0.5)} on each side"
 			puts "5 reps @ #{(weight*0.6).round_to(5)} with #{plate_calc (weight*0.6)} on each side"
-			(0.7..0.9).step(.1),each do |val|
+			(0.7..0.9).step(0.1).each do |val|
 				puts "3 reps @ #{(weight*val).round_to(5)} with #{plate_calc ((weight*val))} on each side"
 			end
 			puts "***********************************"
